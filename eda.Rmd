@@ -1,0 +1,130 @@
+---
+title: "citadel"
+author: "Jun Yong Go"
+date: "3/25/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(mgcv)
+library(sp)
+```
+
+```{r, cache = TRUE}
+uber2014 = read.csv('data/uber_trips_2014.csv')
+uber2015 = read.csv('data/uber_trips_2015.csv')
+
+bases = read.csv('data/bases.csv')
+demographics = read.csv('data/demographics.csv')
+geographic = read.csv('data/geographic.csv')
+zones = read.csv('data/zones.csv')
+```
+
+```{r}
+head(uber2014)
+```
+
+```{r}
+# days = as.Date(uber2014$pickup_datetime, format = '%m/%d/%y')
+```
+
+```{r}
+n = nrow(geographic)
+bk88 = geographic$BK88
+```
+
+```{r}
+bk88.df = data.frame(latitude = bk88[seq(from = 2, to = n, by = 2)],
+                     longitude = bk88[seq(from = 1, to = n, by = 2)],
+                     group = 1)
+hist(bk88.df$latitude)
+hist(bk88.df$longitude)
+bk88.df$latitude[1:10]
+bk88.df$longitude[1:10]
+```
+
+```{r}
+map = get_map(location = 'New York, USA', zoom = 10)
+ggmap(map) + geom_polygon(data = bk88.df, aes(x = longitude, y = latitude, 
+                                            group = group))
+```
+
+```{r}
+createNTADF = function(coords) {
+  n = length(coords)
+  data.frame(latitude = coords[seq(from = 2, to = n, by = 2)],
+             longitude = coords[seq(from = 1, to = n, by = 2)],
+             group = names(coords))
+}
+```
+
+```{r}
+# geographic.list = as.list(geographic)
+# geographic.df.list = lapply(createNTADF,)
+```
+
+```{r, cache = TRUE, warning = FALSE}
+map = get_map(location = 'New York, USA', zoom = 11)
+nta.names = names(geographic)
+n = nrow(geographic)
+geographic.map = ggmap(map)
+for (i in (1:ncol(geographic))) {
+  nta.coords = geographic[, i]
+  nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+                      longitude = nta.coords[seq(from = 1, to = n, by = 2)],
+                      group = nta.names[i])
+  ntaLabel.df = data.frame(latitude = mean(nta.df$latitude, na.rm = TRUE),
+                           longitude = mean(nta.df$longitude, na.rm = TRUE),
+                           group = nta.df$group)
+  geographic.map = geographic.map + 
+    geom_path(data = nta.df, aes(x = longitude, y = latitude), size = 0.2) +
+    geom_text(data = ntaLabel.df, aes(label = group, 
+                                      x = longitude, y = latitude),
+              size = 1.5)
+}
+```
+
+```{r, warning = FALSE}
+geographic.map
+```
+
+```{r, cache = TRUE, warning = FALSE}
+map = get_map(location = 'New York, USA', zoom = 10)
+nta.names = names(geographic)
+n = nrow(geographic)
+geographic.map = ggmap(map)
+for (i in (1:ncol(geographic))) {
+  nta.coords = geographic[, i]
+  nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+                      longitude = nta.coords[seq(from = 1, to = n, by = 2)],
+                      group = nta.names[i])
+  ntaLabel.df = data.frame(latitude = mean(nta.df$latitude, na.rm = TRUE),
+                           longitude = mean(nta.df$longitude, na.rm = TRUE),
+                           group = nta.df$group)
+  geographic.map = geographic.map + 
+    geom_path(data = nta.df, aes(x = longitude, y = latitude), size = 0.2) +
+    geom_text(data = ntaLabel.df, aes(label = group,
+                                      x = longitude, y = latitude))
+}
+```
+
+```{r, warning = FALSE}
+# geographic.map
+```
+
+```{r}
+# ply <- SpatialPolygons(list(Polygons(list(Polygon(bk88.df[, c(1, 2)])), ID = 1)))
+# pts = data.frame(x = 40.62910, y = -73.97685)
+# coordinates(pts) <- ~ x + y
+```
+
+```{r}
+# over(pts, as(ply, "SpatialPolygons"))
+```
