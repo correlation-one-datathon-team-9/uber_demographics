@@ -1,0 +1,347 @@
+---
+title: "Datathon Viz"
+author: "Derek Young"
+date: "3/25/2017"
+output: html_document
+---
+
+### Inspecting Uber 2014 Data with Heat Maps
+
+```{r, message = FALSE}
+# Libraries
+library(ggplot2)
+library(ggmap)
+library(tidyverse)
+```
+
+```{r}
+# 315 theme
+my_theme <- theme_bw() + 
+  theme(panel.background = element_rect(fill = "white"), 
+  axis.text = element_text(size = 10, color = "orchid4", face = "bold",                            family = "Times"),
+  axis.title = element_text(size = 12, color = "steelblue4", 
+                            face = "bold.italic", family = "Times"),
+  plot.title = element_text(size = 15, color = "dodgerblue4", face = "bold",
+                            family = "Times")) 
+```
+
+```{r, cache = TRUE, warning = FALSE, message = FALSE}
+# Read in uber 2014 data
+uber14 <- read_csv('uber_trips_2014.csv')
+# Read in uber 2015 data 
+#uberData15 <- read_csv('uber_trips_2015.csv')
+# Subset of only the pickup 
+
+# Combine everything into one dataframe
+#uber <- rbind(uberData14, uberData15)
+# Store geographic 
+geographic <- read.csv('geographic.csv')
+```
+
+
+#### Maps with different zooms 
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# testMap <- ggmap(get_map('New York City', zoom = 14))
+# testMap1 <- ggmap(get_map('New York City', zoom = 15)) 
+# testMap2 <- ggmap(get_map('New York City', zoom = 16)) 
+# testMap5 <- ggmap(get_map('New York City', zoom = 12)) 
+# testMap6 <- ggmap(get_map('New York City', zoom = 13)) 
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# Zoom = 14
+# g <- testMap + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude,
+#                                 fill = ..level..), data = uber14, 
+#                             geom = "polygon", alpha = 0.5)
+# 
+# g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+#   labs(x = "Longitude", y = "Latitude", title = "Uber 2014 Pickups in NYC")
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# Zoom = 15 
+# g <- testMap1 + stat_density2d(aes(x = pickup_longitude, 
+#                                    y = pickup_latitude, fill = ..level..), 
+#                                data = uber14, 
+#                             geom = "polygon", alpha = 0.5)
+# g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+#   labs(x = "Longitude", y = "Latitude", title = "Uber 2014 Pickups in NYC")
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# Zoom = 16
+# g <- testMap2 + stat_density2d(aes(x = pickup_longitude, 
+#                                    y = pickup_latitude, 
+#                                 fill = ..level..), data = uber14, 
+#                             geom = "polygon", alpha = 0.5)
+# g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+#   labs(x = "Longitude", y = "Latitude", title = "Uber 2014 Pickups in NYC")
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# Zoom = 12
+# g <- testMap5 + stat_density2d(aes(x = pickup_longitude, 
+#                                    y = pickup_latitude, 
+#                                 fill = ..level..), data = uber14, 
+#                             geom = "polygon", alpha = 0.5)
+# g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+#   labs(x = "Longitude", y = "Latitude", title = "Uber 2014 Pickups in NYC")
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# Zoom = 13
+# g <- testMap6 + stat_density2d(aes(x = pickup_longitude, 
+#                                    y = pickup_latitude, 
+#                                 fill = ..level..), data = uber14, 
+#                             geom = "polygon", alpha = 0.5)
+# g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+#   labs(x = "Longitude", y = "Latitude", title = "Uber Pickups in NYC")
+```
+
+#### Put heat map on different New York Map with the grid boundaries 
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# map = ggmap(get_map(location = "New York, USA", zoom = 11))
+# 
+# g <- map + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude, 
+#                                 fill = ..level..), data = uber14, 
+#                             geom = "polygon", alpha = 0.5)
+# g <- g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+#   labs(x = "Longitude", y = "Latitude", title = "Uber Pickups in NYC")
+# 
+# # Add in boundaries for the boroughs
+# n = nrow(geographic)
+# for (i in (1:ncol(geographic))) {
+#   nta.coords = geographic[, i]
+#   nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+#                       longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+#   g = g + geom_path(data = nta.df, aes(x = longitude, y = latitude), 
+#                     size = 0.2)
+# }
+# g
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# map = ggmap(get_map(location = "New York, USA", zoom = 12))
+# 
+# g <- map + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude, 
+#                                 fill = ..level..), data = uber14, 
+#                             geom = "polygon", alpha = 0.5)
+# g <- g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+#   labs(x = "Longitude", y = "Latitude", title = "Uber Pickups in NYC")
+# 
+# 
+# # Add in boundaries for the boroughs
+# n = nrow(geographic)
+# for (i in (1:ncol(geographic))) {
+#   nta.coords = geographic[, i]
+#   nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+#                       longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+#   g = g + geom_path(data = nta.df, aes(x = longitude, y = latitude), 
+#                     size = 0.2)
+# }
+# g
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# map = ggmap(get_map(location = "New York, USA", zoom = 13))
+# 
+# g <- map + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude, 
+#                                 fill = ..level..), data = uber14, 
+#                             geom = "polygon", alpha = 0.5)
+# g <- g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+#   labs(x = "Longitude", y = "Latitude", title = "Uber Pickups in NYC")
+# 
+# 
+# # Add in boundaries for the boroughs
+# n = nrow(geographic)
+# for (i in (1:ncol(geographic))) {
+#   nta.coords = geographic[, i]
+#   nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+#                       longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+#   g = g + geom_path(data = nta.df, aes(x = longitude, y = latitude), 
+#                     size = 0.2)
+# }
+# g
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# map = ggmap(get_map(location = "New York, USA", zoom = 14))
+# 
+# g <- map + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude, 
+#                                 fill = ..level..), data = uber14, 
+#                             geom = "polygon", alpha = 0.5)
+# g <- g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+#   labs(x = "Longitude", y = "Latitude", title = "Uber Pickups in NYC")
+# 
+# 
+# # Add in boundaries for the boroughs
+# n = nrow(geographic)
+# for (i in (1:ncol(geographic))) {
+#   nta.coords = geographic[, i]
+#   nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+#                       longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+#   g = g + geom_path(data = nta.df, aes(x = longitude, y = latitude), 
+#                     size = 0.2)
+# }
+# g
+```
+
+### Inspecting Green Taxi Data with Heat Maps
+
+```{r, cache = TRUE, warning = FALSE, message = FALSE}
+# Read in the Green Taxi data 
+#green_taxi <- read_csv('green_trips.csv')
+# Randomly sample rows into new csv for data 
+#green_taxi_sample <- green_taxi[sample(nrow(green_taxi), 100000), ]
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# map = ggmap(get_map(location = "New York, USA", zoom = 11))
+# 
+# g <- map + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude,
+#                                 fill = ..level..), data = green_taxi_sample,
+#                             geom = "polygon", alpha = 0.5)
+# g <- g + scale_fill_gradient(low = "yellow", high = "red") + my_theme +
+#   labs(x = "Longitude", y = "Latitude", title = "Green Taxi Pickups in NYC")
+# 
+# # Add in boundaries for the boroughs
+# n = nrow(geographic)
+# for (i in (1:ncol(geographic))) {
+# nta.coords = geographic[, i]
+# nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+# longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+# g = g + geom_path(data = nta.df, aes(x = longitude, y = latitude),
+# size = 0.2)
+# }
+# g
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# map = ggmap(get_map(location = "New York, USA", zoom = 14))
+# 
+# g <- map + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude,
+#                                 fill = ..level..), data = green_taxi_sample,
+#                             geom = "polygon", alpha = 0.5)
+# g <- g + scale_fill_gradient(low = "yellow", high = "red") + my_theme +
+#   labs(x = "Longitude", y = "Latitude", title = "Green Taxi Pickups in NYC")
+# 
+# # Add in boundaries for the boroughs
+# n = nrow(geographic)
+# for (i in (1:ncol(geographic))) {
+#   nta.coords = geographic[, i]
+#   nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+#                       longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+#   g = g + geom_path(data = nta.df, aes(x = longitude, y = latitude),
+#                     size = 0.2)
+# }
+# g
+```
+
+### Inspecting Yellow Taxi Data with Heat Maps 
+
+```{r, cache = TRUE}
+# Read in the Yellow Taxi Data - has four quaters and randomly sammple 100k observations from each 
+yellow14_q2 <- read_csv('yellow_trips_2014Q2.csv')
+yellow14_q2 <- yellow14_q2[sample(nrow(yellow14_q2), 10000), ]
+yellow14_q3 <- read_csv('yellow_trips_2014Q3.csv')
+yellow14_q3 <- yellow14_q3[sample(nrow(yellow14_q3), 10000), ]
+yellow15_q1 <- read_csv('yellow_trips_2015Q1.csv')
+yellow15_q1 <- yellow15_q1[sample(nrow(yellow15_q1), 10000), ]
+yellow15_q2 <- read_csv('yellow_trips_2015Q2.csv')
+yellow15_q2 <- yellow15_q2[sample(nrow(yellow15_q2), 10000), ]
+```
+
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# New York Maps with different Zooms
+map = ggmap(get_map(location = "New York, USA", zoom = 11))
+map2 = ggmap(get_map(location = "New York, USA", zoom = 14))
+```
+
+2014 Q2 
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+g <- map + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude, 
+                                 fill = ..level..), data = yellow14_q2, 
+                             geom = "polygon", alpha = 0.5)
+g <- g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+   labs(x = "Longitude", y = "Latitude", 
+        title = "Yellow Taxi Pickups in NYC", subtitle = "Q2, 2014")
+ 
+# Add in boundaries for the boroughs
+n = nrow(geographic)
+for (i in (1:ncol(geographic))) {
+  nta.coords = geographic[, i]
+  nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+                      longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+  g = g + geom_path(data = nta.df, aes(x = longitude, y = latitude), 
+                    size = 0.2)
+}
+g
+```
+
+2014 Q3
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# Make heat map but with the yellow taxi data for pickup data
+g <- map + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude,
+                                 fill = ..level..), data = yellow14_q3,
+                             geom = "polygon", alpha = 0.5)
+
+g <- g + scale_fill_gradient(low = "yellow", high = "red") + my_theme +
+   labs(x = "Longitude", y = "Latitude",
+        title = "Yellow Taxi Pickups in NYC", subtitle = "Q3, 2014")
+
+# Add in boundaries for the boroughs
+n = nrow(geographic)
+for (i in (1:ncol(geographic))) {
+  nta.coords = geographic[, i]
+  nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+                      longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+  g = g + geom_path(data = nta.df, aes(x = longitude, y = latitude),
+                    size = 0.2)
+}
+g
+```
+
+2015 Q1
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+# Make heat map but with the yellow taxi data for pickup data
+g <- map + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude, 
+                                 fill = ..level..), data = yellow15_q1, 
+                             geom = "polygon", alpha = 0.5)
+g <- g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+   labs(x = "Longitude", y = "Latitude", 
+        title = "Yellow Taxi Pickups in NYC", subtitle = "Q2, 2015")
+
+# Add in boundaries for the boroughs
+n = nrow(geographic)
+for (i in (1:ncol(geographic))) {
+  nta.coords = geographic[, i]
+  nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+                      longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+  g = g + geom_path(data = nta.df, aes(x = longitude, y = latitude), 
+                    size = 0.2)
+}
+g
+```
+
+2015 Q2
+```{r, warning = FALSE, message = FALSE, cache = TRUE}
+g <- map + stat_density2d(aes(x = pickup_longitude, y = pickup_latitude, 
+                                 fill = ..level..), data = yellow15_q2, 
+                             geom = "polygon", alpha = 0.5)
+g <- g + scale_fill_gradient(low = "yellow", high = "red") + my_theme + 
+   labs(x = "Longitude", y = "Latitude", 
+        title = "Yellow Taxi Pickups in NYC", subtitle = "Q2, 2015")
+
+# Add in boundaries for the boroughs
+n = nrow(geographic)
+for (i in (1:ncol(geographic))) {
+  nta.coords = geographic[, i]
+  nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+                      longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+  g = g + geom_path(data = nta.df, aes(x = longitude, y = latitude), 
+                   size = 0.2)
+}
+g
+```
