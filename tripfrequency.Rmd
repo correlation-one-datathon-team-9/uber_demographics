@@ -1,0 +1,126 @@
+---
+title: "NTA Trips Frequency"
+author: "Jun Yong Go"
+date: "3/25/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(sp)
+```
+
+```{r, cache = TRUE}
+uber2014 = read.csv('data/uber_trips_2014.csv')
+uber2015 = read.csv('data/uber_trips_2015.csv')
+
+bases = read.csv('data/bases.csv')
+demographics = read.csv('data/demographics.csv')
+geographic = read.csv('data/geographic.csv')
+zones = read.csv('data/zones.csv')
+```
+
+```{r}
+bases$base[1:5]
+names(geographic)
+```
+
+```{r}
+head(uber2015)
+```
+
+```{r}
+head(zones)
+```
+
+```{r}
+ntaTripCount = integer(ncol(geographic))
+names(ntaTripCount) = names(geographic)
+```
+
+```{r, cache = TRUE}
+for (i in 1:nrow(zones)) {
+  cur_location_id = zones[i, "location_id"]
+  cur_nta_code = zones[i, "nta_code"]
+  subNTA.df = subset(uber2015, pickup_location_id == cur_location_id)
+  ntaTripCount[cur_nta_code] = ntaTripCount[cur_nta_code] + nrow(subNTA.df)
+}
+```
+
+```{r}
+ntaTripCount
+```
+
+```{r}
+sum(ntaTripCount)
+```
+
+```{r}
+get.col.from.val = function(val, lim, col.vec) {
+  col.vec[(val-lim[1])/(lim[2]-lim[1]) * (length(col.vec)-1) + 1]
+}
+col.vec = rev(heat.colors(20))
+count.lim = c(100000, max(ntaTripCount))
+```
+
+
+```{r, warning = FALSE}
+nta_names = names(geographic)
+map = get_map(location = 'New York, USA', zoom = 11, maptype = "toner")
+nta.names = names(geographic)
+n = nrow(geographic)
+geographic.map = ggmap(map)
+for (i in 1:ncol(geographic)) {
+  nta_name = nta_names[i]
+  nta.coords = geographic[, i]
+  if (ntaTripCount[nta_name] < 100000) val = 100000
+  else val = ntaTripCount[nta_name]
+  nta_color = get.col.from.val(val, count.lim, col.vec)
+  nta.df = data.frame(latitude = nta.coords[seq(from = 2, to = n, by = 2)],
+                      longitude = nta.coords[seq(from = 1, to = n, by = 2)])
+  ntaLabel.df = data.frame(latitude = mean(nta.df$latitude, na.rm = TRUE),
+                           longitude = mean(nta.df$longitude, na.rm = TRUE),
+                           group = nta_name)
+  geographic.map = geographic.map + 
+    geom_polygon(data = nta.df, aes(x = longitude, y = latitude), 
+                 size = 0.2, fill = nta_color, alpha = 0.6) +
+    geom_text(data = ntaLabel.df, aes(label = group,
+                                      x = longitude, y = latitude),
+              size = 1.5)
+}
+```
+
+```{r, warning = FALSE}
+# geographic.map
+```
+
+```{r}
+pie(rep(1, 20), col = heat.colors(20))
+```
+
+```{r}
+sort(ntaTripCount)
+```
+
+```{r}
+subset(demographics, nta_code == 'BX30')
+subset(demographics, nta_code == 'BK42')
+subset(demographics, nta_code == 'BX17')
+```
+
+
+```{r}
+names.below = names(ntaTripCount[ntaTripCount < 10000])
+names.above = names(ntaTripCount[ntaTripCount > 10000])
+below.df = subset(demographics, nta_code %in% names.below)
+above.df = subset(demographics, nta_code %in% names.above)
+
+mean(below.df$mean_income)
+mean(above.df$mean_income)
+```
